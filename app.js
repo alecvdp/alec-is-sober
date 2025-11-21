@@ -1,31 +1,13 @@
 /* Settings + controls enhancement
-   - Adds inputs for start date, daily cost, currency, name and color
+   - Adds inputs for start date and name
    - Persists to localStorage and keeps URL params in sync for sharing
+   - Theme toggle for dark/light mode
 */
 
 const params = new URLSearchParams(window.location.search);
 const STORAGE_KEY = "ais-settings";
 const FALLBACK_DATE = "2025-05-17T06:00";
-const DEFAULT_DAILY = 20;
-const DEFAULT_CURRENCY = "$";
 const DEFAULT_NAME = "Alec";
-const DEFAULT_COLOR = "FB0";
-
-function expandHex3To6(h) {
-  // accepts 'FB0' or 'fb0' and returns 'FFBB00'
-  const m = /^([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])$/.exec(h);
-  if (!m) return null;
-  return (m[1] + m[1] + m[2] + m[2] + m[3] + m[3]).toUpperCase();
-}
-
-function normalizeHex(h) {
-  if (!h) return expandHex3To6(DEFAULT_COLOR) || "FFBB00";
-  h = h.replace(/^#/, "");
-  if (/^[0-9a-fA-F]{6}$/.test(h)) return h.toUpperCase();
-  if (/^[0-9a-fA-F]{3}$/.test(h)) return expandHex3To6(h);
-  // fallback
-  return expandHex3To6(DEFAULT_COLOR) || "FFBB00";
-}
 
 function loadStored() {
   try {
@@ -49,17 +31,11 @@ function getInitialSettings() {
       dVal = FALLBACK_DATE;
     }
   }
-  // Normalize color to 6-digit hex without '#'
-  const colorParam = params.get("h");
-  const colorStored = stored.h;
-  const hNorm = normalizeHex(colorParam ?? colorStored ?? DEFAULT_COLOR);
 
   return {
     d: dVal,
-    s: params.has("s") ? params.get("s") : (stored.s ?? String(DEFAULT_DAILY)),
-    c: params.get("c") ?? stored.c ?? DEFAULT_CURRENCY,
     n: params.get("n") ?? stored.n ?? DEFAULT_NAME,
-    h: hNorm,
+    theme: stored.theme ?? "dark",
   };
 }
 
@@ -75,10 +51,7 @@ function updateURLFromSettings(obj) {
   const u = new URL(window.location.href);
   const p = new URLSearchParams();
   if (obj.d) p.set("d", obj.d);
-  if (obj.s) p.set("s", obj.s);
-  if (obj.c) p.set("c", obj.c);
   if (obj.n) p.set("n", obj.n);
-  if (obj.h) p.set("h", obj.h);
   const qs = p.toString();
   history.replaceState(null, "", qs ? `?${qs}` : u.pathname);
 }
@@ -115,16 +88,28 @@ let time = (() => {
   const t = Date.parse(settings.d);
   return isNaN(t) ? Date.parse(FALLBACK_DATE) : t;
 })();
-let dailyCost = parseFloat(settings.s) || DEFAULT_DAILY;
-let currency = settings.c || DEFAULT_CURRENCY;
 
 // apply initial UI state
 if (settings.n) {
   document.querySelectorAll(".name").forEach((s) => (s.innerText = settings.n));
 }
-if (settings.h) {
-  document.body.style.setProperty("--color", `#${normalizeHex(settings.h)}`);
+
+// Apply theme
+function applyTheme(theme) {
+  if (theme === "light") {
+    document.body.classList.add("light-mode");
+    document.getElementById("dark-mode-btn")?.classList.remove("active");
+    document.getElementById("light-mode-btn")?.classList.add("active");
+  } else {
+    document.body.classList.remove("light-mode");
+    document.getElementById("dark-mode-btn")?.classList.add("active");
+    document.getElementById("light-mode-btn")?.classList.remove("active");
+  }
+  settings.theme = theme;
+  saveSettings(settings);
 }
+
+applyTheme(settings.theme);
 
 const data = {
   years: null,
@@ -134,30 +119,23 @@ const data = {
   hours: null,
   minutes: null,
   seconds: null,
-  savings: null,
-  dollars: null,
-  cents: null,
 };
 
 const progresses = document.querySelectorAll(".progress[fraction]");
 
-// Controls (may not exist if someone stripped them)
+// Controls
 const startInput = document.getElementById("start-datetime");
-const dailyCostInput = document.getElementById("daily-cost");
-const currencyInput = document.getElementById("currency");
 const nameInput = document.getElementById("name-input");
-const colorInput = document.getElementById("color-input");
 const copyBtn = document.getElementById("copy-link");
 const resetBtn = document.getElementById("reset-button");
+const darkModeBtn = document.getElementById("dark-mode-btn");
+const lightModeBtn = document.getElementById("light-mode-btn");
 
 function applySettingsToUI() {
   // fill inputs if present
   try {
     if (startInput) startInput.value = toLocalDatetimeInputValue(new Date(time));
-    if (dailyCostInput) dailyCostInput.value = Number(dailyCost).toFixed(2);
-    if (currencyInput) currencyInput.value = currency;
     if (nameInput) nameInput.value = document.querySelectorAll(".name").length ? document.querySelectorAll(".name")[0].innerText : settings.n;
-  if (colorInput) colorInput.value = `#${normalizeHex(settings.h)}`;
   } catch (e) {
     // ignore
   }
@@ -180,29 +158,6 @@ function applySettingsFromInputs() {
     }
   }
 
-  // daily cost
-  if (dailyCostInput) {
-    dailyCostInput.classList.remove("invalid");
-    if (dailyCostInput.value !== "") {
-      const val = parseFloat(dailyCostInput.value);
-      if (!isNaN(val) && val >= 0) {
-        settings.s = String(val);
-        dailyCost = val;
-      } else {
-        dailyCostInput.classList.add("invalid");
-        showToast("Enter a valid non-negative daily cost");
-      }
-    }
-  }
-
-  // currency (short string)
-  if (currencyInput) {
-    let cur = (currencyInput.value || DEFAULT_CURRENCY).trim();
-    if (cur.length > 3) cur = cur.slice(0, 3);
-    settings.c = cur;
-    currency = cur;
-  }
-
   // name (trim and limit)
   if (nameInput) {
     let nm = (nameInput.value || DEFAULT_NAME).trim();
@@ -211,21 +166,20 @@ function applySettingsFromInputs() {
     document.querySelectorAll(".name").forEach((s) => (s.innerText = settings.n));
   }
 
-  // color
-  if (colorInput && colorInput.value) {
-    settings.h = normalizeHex(colorInput.value);
-    document.body.style.setProperty("--color", `#${settings.h}`);
-  }
-
   saveSettings(settings);
   updateURLFromSettings(settings);
 }
 
 if (startInput) startInput.addEventListener("change", () => applySettingsFromInputs());
-if (dailyCostInput) dailyCostInput.addEventListener("input", () => applySettingsFromInputs());
-if (currencyInput) currencyInput.addEventListener("input", () => applySettingsFromInputs());
 if (nameInput) nameInput.addEventListener("input", () => applySettingsFromInputs());
-if (colorInput) colorInput.addEventListener("input", () => applySettingsFromInputs());
+
+// Theme toggle
+if (darkModeBtn) {
+  darkModeBtn.addEventListener("click", () => applyTheme("dark"));
+}
+if (lightModeBtn) {
+  lightModeBtn.addEventListener("click", () => applyTheme("light"));
+}
 
 if (copyBtn) {
   copyBtn.addEventListener("click", async () => {
@@ -255,7 +209,7 @@ if (resetBtn) {
   resetBtn.addEventListener("click", () => {
     try {
       localStorage.removeItem(STORAGE_KEY);
-    } catch (e) {}
+    } catch (e) { }
     history.replaceState(null, "", window.location.pathname);
     location.reload();
   });
@@ -279,18 +233,7 @@ function update() {
   data.hours = seconds / 3600;
   data.minutes = seconds / 60;
   data.seconds = seconds;
-  data.savings = data.days * dailyCost;
-  data.dollars = Math.floor(data.savings)
-    .toString()
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  data.cents = (data.savings - Math.floor(data.savings))
-    .toFixed(2)
-    .split(".")[1];
   updatePies();
-  const dollarsEl = document.getElementById("dollars");
-  const centsEl = document.getElementById("cents");
-  if (dollarsEl) dollarsEl.innerText = `${currency}${data.dollars}`;
-  if (centsEl) centsEl.innerText = data.cents;
 
   requestAnimationFrame(update);
 }

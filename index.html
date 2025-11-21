@@ -1,169 +1,210 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <link rel="icon" href="/favicon.png" />
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <link rel="icon" href="/favicon.png" />
   <title>Alec Is Sober</title>
-    <meta
-  name="description"
-  content="alec quit alcohol. this is helping them along the way."
-    />
+  <meta name="description" content="Alec quit alcohol. This is helping them along the way." />
   <meta itemprop="name" content="Alec Is Sober" />
-    <meta
-  itemprop="description"
-  content="alec quit alcohol. this is helping them along the way."
-    />
+  <meta itemprop="description" content="Alec quit alcohol. This is helping them along the way." />
   <meta name="og:title" content="Alec Is Sober" />
-    <meta
-  name="og:description"
-  content="alec quit alcohol. this is helping them along the way."
-    />
+  <meta name="og:description" content="Alec quit alcohol. This is helping them along the way." />
   <meta name="og:site_name" content="Alec Is Sober" />
-    <meta name="og:type" content="website" />
-    <meta id="theme" name="theme-color" content="black" />
-    <link rel="stylesheet" href="app.css" />
-  </head>
-  <body>
-    <div id="app">
-      <header class="container">
-        <h1><span class="name">Alec</span> is sober.</h1>
-        <p>
-          <span class="name">Alec</span>
-          quit alcohol. this is helping them along the way.
-        </p>
-      </header>
-      <div class="container controls">
-        <label class="ctrl" for="start-datetime">
-          <span>Start date</span>
-          <input id="start-datetime" type="datetime-local" aria-label="Start date and time" />
-        </label>
-        <label class="ctrl" for="daily-cost">
-          <span>Daily cost</span>
-          <input id="daily-cost" type="number" step="0.01" min="0" aria-label="Daily cost" />
-        </label>
-        <label class="ctrl" for="currency">
-          <span>Currency</span>
-          <input id="currency" type="text" maxlength="3" aria-label="Currency symbol" />
-        </label>
-        <label class="ctrl" for="name-input">
-          <span>Name</span>
-          <input id="name-input" type="text" aria-label="Name" />
-        </label>
-        <label class="ctrl" for="color-input">
-          <span>Color</span>
-          <input id="color-input" type="color" aria-label="Accent color" />
-        </label>
-        <div class="ctrl buttons">
-          <button id="copy-link" type="button">Copy share link</button>
-          <button id="reset-button" type="button">Reset</button>
+  <meta name="og:type" content="website" />
+  <meta id="theme" name="theme-color" content="#0f172a" />
+
+  <!-- Google Fonts: Outfit for a modern, premium feel -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="app.css" />
+</head>
+
+<body>
+  <div id="app">
+    <header class="container">
+      <h1><span class="name">Alec</span> is sober.</h1>
+      <p>
+        <span class="name">Alec</span>
+        quit alcohol. This is helping them along the way.
+      </p>
+    </header>
+
+    <!-- Theme Toggle -->
+    <div class="container theme-toggle-wrapper">
+      <div class="theme-toggle">
+        <button id="dark-mode-btn" class="active" aria-label="Dark mode" title="Dark mode">🌙</button>
+        <button id="light-mode-btn" aria-label="Light mode" title="Light mode">☀️</button>
+      </div>
+    </div>
+
+    <!-- Collapsible Settings -->
+    <div class="container">
+      <details class="settings-toggle">
+        <summary>Settings & Controls</summary>
+        <div class="controls">
+          <label class="ctrl" for="start-datetime">
+            <span>Start date</span>
+            <input id="start-datetime" type="datetime-local" aria-label="Start date and time" />
+          </label>
+          <label class="ctrl" for="name-input">
+            <span>Name</span>
+            <input id="name-input" type="text" aria-label="Name" />
+          </label>
+          <div class="ctrl buttons">
+            <button id="copy-link" type="button">Copy share link</button>
+            <button id="reset-button" type="button">Reset</button>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
+
+    <div class="container flex stats-grid">
+      <div class="progress card" fraction="seconds">
+        <div class="left"></div>
+        <div class="right">
+          <h2></h2>
+          <h3>Seconds</h3>
         </div>
       </div>
-      <div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
-      <div class="container flex">
-        <div class="progress" fraction="seconds">
-          <div class="left"></div>
-          <div class="right">
-            <h2></h2>
-            <h3>Seconds</h3>
-          </div>
-        </div>
-        <div class="progress" fraction="minutes">
-          <div class="left"></div>
-          <div class="right">
-            <h2></h2>
-            <h3>Minutes</h3>
-          </div>
-        </div>
-        <div class="progress" fraction="hours">
-          <div class="left"></div>
-          <div class="right">
-            <h2></h2>
-            <h3>Hours</h3>
-          </div>
-        </div>
-        <div class="progress" fraction="days">
-          <div class="left"></div>
-          <div class="right">
-            <h2></h2>
-            <h3>Days</h3>
-          </div>
+      <div class="progress card" fraction="minutes">
+        <div class="left"></div>
+        <div class="right">
+          <h2></h2>
+          <h3>Minutes</h3>
         </div>
       </div>
-      <div class="container flex">
-        <div class="progress" fraction="weeks">
-          <div class="left"></div>
-          <div class="right">
-            <h2></h2>
-            <h3>Weeks</h3>
-          </div>
-        </div>
-        <div class="progress" fraction="months">
-          <div class="left"></div>
-          <div class="right">
-            <h2></h2>
-            <h3>Months</h3>
-          </div>
-        </div>
-        <div class="progress" fraction="years">
-          <div class="left"></div>
-          <div class="right">
-            <h2></h2>
-            <h3>Years</h3>
-          </div>
-        </div>
-        <div class="progress dark">
-          <div class="right">
-            <h2>
-              <span><span id="dollars"></span></span
-              ><small>.<span id="cents"></span></small>
-            </h2>
-            <h3>Saved</h3>
-          </div>
+      <div class="progress card" fraction="hours">
+        <div class="left"></div>
+        <div class="right">
+          <h2></h2>
+          <h3>Hours</h3>
         </div>
       </div>
-      <div class="container">
-        <div class="timeline">
-          <div>
-            <h3>Day 1</h3>
-            <p>Sleep and hydration may begin to improve.</p>
-          </div>
-          <div>
-            <h3>Week 1</h3>
-            <p>Energy, focus, and mood can stabilize as your body adjusts.</p>
-          </div>
-          <div>
-            <h3>1 Month</h3>
-            <p>Liver and gut begin to recover; skin and sleep quality often improve.</p>
-          </div>
-          <div>
-            <h3>3 Months</h3>
-            <p>Blood pressure and resting heart rate may improve; clarity and productivity often increase.</p>
-          </div>
-          <div>
-            <h3>6 Months</h3>
-            <p>Ongoing healing supports more stable mood, relationships, and routines.</p>
-          </div>
-          <div>
-            <h3>1 Year</h3>
-            <p>Sustained benefits compound: finances, health markers, and wellbeing often improve.</p>
-          </div>
-          <p style="text-align: center; width: 100%">
-            <small>
-              <a href="https://github.com/alecvdp/alec-is-sober">GitHub</a>
-            </small>
-          </p>
-          <p style="text-align: center; width: 100%; opacity: 0.5">
-            <a
-              href="?n=Alec&d=2025-05-17T06:00&h=FFBB00&s=20&c=$"
-              title="n: name, d: datetime, h: hex color, s: per day spend, c: currency"
-              ><small>?n=Alec&d=2025-05-17T06:00&h=FFBB00&s=20&c=$</small></a
-            >
-          </p>
+      <div class="progress card" fraction="days">
+        <div class="left"></div>
+        <div class="right">
+          <h2></h2>
+          <h3>Days</h3>
         </div>
       </div>
     </div>
-    <script src="app.js"></script>
-  </body>
+
+    <div class="container flex stats-grid">
+      <div class="progress card" fraction="weeks">
+        <div class="left"></div>
+        <div class="right">
+          <h2></h2>
+          <h3>Weeks</h3>
+        </div>
+      </div>
+      <div class="progress card" fraction="months">
+        <div class="left"></div>
+        <div class="right">
+          <h2></h2>
+          <h3>Months</h3>
+        </div>
+      </div>
+      <div class="progress card" fraction="years">
+        <div class="left"></div>
+        <div class="right">
+          <h2></h2>
+          <h3>Years</h3>
+        </div>
+      </div>
+      <div class="progress card savings">
+        <div class="right">
+          <h2>
+            <span><span id="dollars"></span></span><small>.<span id="cents"></span></small>
+          </h2>
+          <h3>Saved</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <h2 class="wellness-header">Your Wellness Journey</h2>
+      <div class="timeline">
+        <div class="milestone">
+          <div class="milestone-icon">💧</div>
+          <h3>Day 1</h3>
+          <p><strong>Physical:</strong> Body begins to rehydrate; liver starts regulating blood sugar more effectively.
+          </p>
+          <p><strong>Mental:</strong> Initial improvements in sleep and mood may begin for light to moderate drinkers.
+          </p>
+          <a href="https://www.cdc.gov/alcohol/" target="_blank" rel="noopener" class="source">Source: CDC</a>
+        </div>
+
+        <div class="milestone">
+          <div class="milestone-icon">😴</div>
+          <h3>Week 1</h3>
+          <p><strong>Physical:</strong> Skin appears less dehydrated; mild liver damage and fat begin to reduce.</p>
+          <p><strong>Mental:</strong> Sleep quality and mood typically improve; anxiety may start to decrease.</p>
+          <a href="https://www.niaaa.nih.gov/alcohols-effects-health/alcohol-topics" target="_blank" rel="noopener"
+            class="source">Source: NIAAA</a>
+        </div>
+
+        <div class="milestone">
+          <div class="milestone-icon">🧠</div>
+          <h3>1 Month</h3>
+          <p><strong>Physical:</strong> Blood pressure may reduce by ~6%; liver function continues to improve
+            significantly.</p>
+          <p><strong>Mental:</strong> Mental clarity improves; anxiety and depression symptoms often lessen
+            considerably.</p>
+          <a href="https://www.cdc.gov/alcohol/" target="_blank" rel="noopener" class="source">Source: CDC</a>
+        </div>
+
+        <div class="milestone">
+          <div class="milestone-icon">🌱</div>
+          <h3>3 Months</h3>
+          <p><strong>Physical:</strong> Blood sugar and insulin levels stabilize; cancer-related growth factors decline.
+          </p>
+          <p><strong>Mental:</strong> Brain continues healing; serotonin levels stabilize, reducing mood swings and
+            anxiety.</p>
+          <a href="https://www.niaaa.nih.gov/alcohols-effects-health/alcohol-topics" target="_blank" rel="noopener"
+            class="source">Source: NIAAA</a>
+        </div>
+
+        <div class="milestone">
+          <div class="milestone-icon">💪</div>
+          <h3>6 Months</h3>
+          <p><strong>Physical:</strong> Immune system strengthens; liver damage may be fully reversed for moderate
+            drinkers.</p>
+          <p><strong>Mental:</strong> Neurochemical rebalancing nearly complete; sustained improvements in mood and
+            energy.</p>
+          <a href="https://www.cdc.gov/alcohol/" target="_blank" rel="noopener" class="source">Source: CDC</a>
+        </div>
+
+        <div class="milestone">
+          <div class="milestone-icon">✨</div>
+          <h3>1 Year</h3>
+          <p><strong>Physical:</strong> Risks of heart disease and various cancers substantially reduced; full body
+            systems show lasting recovery.</p>
+          <p><strong>Mental:</strong> Major improvements in cognitive function, emotional stability, and overall
+            wellbeing.</p>
+          <a href="https://www.niaaa.nih.gov/alcohols-effects-health/alcohol-topics" target="_blank" rel="noopener"
+            class="source">Source: NIAAA</a>
+        </div>
+      </div>
+
+      <footer class="site-footer">
+        <p class="disclaimer">
+          <small>Individual experiences may vary. If you're experiencing severe withdrawal symptoms, please seek medical
+            supervision. These benefits are based on research from reputable medical institutions.</small>
+        </p>
+        <p>
+          <a href="https://github.com/alecvdp/alec-is-sober" target="_blank" rel="noopener">GitHub</a>
+        </p>
+      </footer>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+
 </html>
