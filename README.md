@@ -65,3 +65,4 @@ If you fork this repo, ensure Pages is enabled for your fork (Settings → Pages
 ## Attribution
 
 Originally based on [ja-k-e/jake-quits](https://github.com/ja-k-e/jake-quits). Thanks!
+
