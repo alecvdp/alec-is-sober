@@ -1,6 +1,7 @@
 {
   "name": "alec-is-sober",
   "version": "1.0.0",
+  "homepage": "https://sober.alecvdp.com",
   "description": "Sobriety counter",
   "scripts": {
     "dev": "http-server ."

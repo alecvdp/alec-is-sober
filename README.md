@@ -4,7 +4,7 @@ A tiny static site that tracks time sober and estimated savings. Forked and adap
 
 Live site:
 
-- https://alecvdp.github.io/alec-is-sober/
+- https://sober.alecvdp.com/
 
 ## Features
 
@@ -54,7 +54,7 @@ python3 -m http.server 8000
 
 ## Deploy
 
-GitHub Pages is set up to auto-deploy on push to `master` using GitHub Actions:
+GitHub Pages is set up to auto-deploy on push to `main` using GitHub Actions:
 
 - Workflow: `.github/workflows/deploy.yml`
 - Artifact path: repo root (`.`)
